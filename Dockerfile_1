@@ -22,7 +22,7 @@ WORKDIR /app
 
 # Clone jouw GitHub-repo naar de container
 RUN rm -rf /app/code && \
-    git clone https://github.com/alextolm001/eurovision.git /app/code
+    git clone https://github.com/alextolm001/Dockerfile_1.git /app/code
 
 # Verplaats gewenste script(s) naar de werkmap
 RUN cp /app/code/shuffle_1/count_votes.py .
