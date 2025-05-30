@@ -1,0 +1,36 @@
+# Start met een officiële Python-image gebaseerd op Debian Bullseye
+FROM python:3.8-bullseye
+
+# Installeer Java en Git (voor PySpark en het klonen van je repo)
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk git && \
+    apt-get clean
+
+# Zet Java-omgeving op
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Installeer benodigde Python-pakketten
+RUN pip install --no-cache-dir pyspark \
+    google-api-python-client \
+    google-auth \
+    google-auth-httplib2 \
+    google-auth-oauthlib
+
+# Zet de werkmap
+WORKDIR /app
+
+# Clone jouw GitHub-repo naar de container
+RUN rm -rf /app/code && \
+    git clone https://github.com/alextolm001/eurovision.git /app/code
+
+# Verplaats gewenste script(s) naar de werkmap
+RUN cp /app/code/shuffle_1/count_votes.py .
+
+# Let op: je kunt hier meerdere scripts kopiëren indien nodig:
+# RUN cp /app/code/shuffle_2/another_script.py .
+
+# Serviceaccount wordt extern toegevoegd (via volume-mount bij run)
+
+# Start het script
+CMD ["python", "count_votes.py"]

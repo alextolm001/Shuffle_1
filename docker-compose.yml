@@ -1,0 +1,22 @@
+version: '3.3'
+
+services:
+  shuffle_1:
+    build:
+      context: .
+      dockerfile: Dockerfile_1
+    container_name: shuffle_1_service
+    volumes:
+      - ./service_account.json:/app/service_account.json
+    command: python count_votes.py
+    working_dir: /app
+
+  shuffle_2:
+    build:
+      context: .
+      dockerfile: Dockerfile_2
+    container_name: shuffle_2_service
+    volumes:
+      - ./service_account.json:/app/service_account.json
+    command: python vote_upload_fr.py
+    working_dir: /app
