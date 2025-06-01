@@ -1,10 +1,10 @@
-# 🔹 Basis: officiële Python 3.8 image met Debian Bullseye
+# 🔹 Basis: officiële Python 3.8 image met Debian Bullseye 
 FROM python:3.8-bullseye
 
-# 🔹 Metadata (voor traceerbaarheid)
+# 🔹 Metadata
 LABEL maintainer="alextolm001@gmail.com" \
-      version="1.0" \
-      description="Shuffle_1 container voor Eurovision stemverwerking"
+      version="1.1" \
+      description="Shuffle_1 container voor Eurovision stemverwerking (periodiek)"
 
 # 🔹 Systeemafhankelijkheden: Java en Git voor PySpark + repo-kloon
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,10 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# 🔹 Werkdirectory voor scripts
+# 🔹 Werkdirectory
 WORKDIR /app
 
-# 🔹 Installeer vereiste Python-pakketten in één pip-oproep
+# 🔹 Installeer Python-pakketten
 RUN pip install --no-cache-dir \
     pyspark \
     google-api-python-client \
@@ -28,13 +28,12 @@ RUN pip install --no-cache-dir \
     google-auth-httplib2 \
     google-auth-oauthlib
 
-# 🔹 Clone de GitHub-repo (jouw repo met scripts)
+# 🔹 Clone repo met je stemverwerkingsscripten
 RUN git clone https://github.com/alextolm001/Shuffle_1.git /app/code
 
-# 🔹 Kopieer specifiek script dat uitgevoerd moet worden
-RUN cp /app/code/count_votes.py .
+# 🔹 Kopieer benodigde scripts
+RUN cp /app/code/count_votes.py . && cp /app/code/loop_runner.py .
 
-# 🔹 (Optioneel) service_account.json mount je extern via volume
+# 🔹 Start het loopscript dat elke 3 minuten runt
+CMD ["python", "loop_runner.py"]
 
-# 🔹 Start het script bij containeropstart
-CMD ["python", "count_votes.py"]
